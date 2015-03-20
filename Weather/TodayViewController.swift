@@ -7,6 +7,9 @@
 //
 
 import UIKit
+import Foundation
+
+var uiNeedsRefresh = true
 
 class TodayViewController: UIViewController {
 
@@ -14,6 +17,12 @@ class TodayViewController: UIViewController {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
         NSNotificationCenter.defaultCenter().addObserver(self, selector: "meteoDataArrived:", name: meteoDataArrivedKey, object: nil)
+        
+        if uiNeedsRefresh {
+            // get some real data
+            refresh(self)
+            uiNeedsRefresh = false
+        }
     }
 
     override func didReceiveMemoryWarning() {
@@ -29,8 +38,20 @@ class TodayViewController: UIViewController {
     }
 
     @IBAction func refresh(sender: AnyObject) {
+        // getting of data from web service
         var meteoData = MeteoData();
-        var str = meteoData.GetData("Prague", numOfDays:5)
+        var initLocation = ""
+        if StoredData.sharedInstance.citiesArray == nil || ( StoredData.sharedInstance.citiesArray!.isEmpty )
+        {
+            initLocation = "Prague"
+        }
+        else
+        {
+            var index = arc4random_uniform( UInt32(StoredData.sharedInstance.citiesArray!.count ) )
+            initLocation = StoredData.sharedInstance.citiesArray![Int(index)]
+        }
+
+        var str = meteoData.GetData(initLocation, numOfDays:5)
     }
     
     func meteoDataArrived(notification: NSNotification) {
@@ -47,21 +68,27 @@ class TodayViewController: UIViewController {
             else{
                 text += "\u{00B0}F"
             }
-            text += " \(meteoData.actualWeather!.weatherDesc)"
+            text += " | \(meteoData.actualWeather!.weatherDesc)"
             self.todayWeather.text = text
             
             // setting of picture
             var ImageName = ""
-            switch meteoData.actualWeather!.weatherDesc {
-                case "Cloudy": ImageName = "Cloudy_Big"
-                case "Windy": ImageName = "WInd_Big"
-                case "Lightning": ImageName = "Lightning_Big"
-            default: ImageName="Sun_Big"
+            var desc = meteoData.actualWeather!.weatherDesc
+            if desc.rangeOfString("Cloudy") != nil {
+                ImageName = "Cloudy_Big"
             }
-            
+            else if desc.rangeOfString("Windy") != nil {
+                ImageName = "WInd_Big"
+            }
+            else if desc.rangeOfString("Lightning") != nil {
+                ImageName = "Lightning_Big"
+            } else {
+                ImageName="Sun_Big"
+            }
             ImageName += ".png"
             self.weatherImage.image = UIImage(named:ImageName)
             
+            // and some texts
             self.place.text = meteoData.city!
             self.chanceOfRain.text = "\(meteoData.forecasts![0].chanceOfRain)"
             self.precipitation.text = "\(meteoData.forecasts![0].precipitationMM) mm"

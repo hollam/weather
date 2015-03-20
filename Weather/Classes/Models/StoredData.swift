@@ -28,9 +28,9 @@ class StoredData
 
     var defaults=NSUserDefaults()
     
-    let celsius = "celsius"
-    let meters = "meters"
-    let cities = "cities"
+    private let celsius = "celsius"
+    private let meters = "meters"
+    private let cities = "cities"
     
     var unitLengthAreMeters: Bool? {
         didSet {
