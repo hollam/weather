@@ -44,6 +44,11 @@ class SettingsViewController: UIViewController {
         setTexts()
     }
     
+    override func viewWillAppear(animated: Bool)
+    {
+        uiNeedsRefresh = true
+    }
+    
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.

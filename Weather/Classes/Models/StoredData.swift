@@ -74,7 +74,7 @@ class StoredData
         else
         {
             // some default cities
-            citiesArray = ["Prague", "Paris", "Tokio", "San Francisco", "New York", "Barcelona"]
+            citiesArray = ["Prague", "Paris", "Tokio, Japan", "San Francisco", "New York", "Barcelona"]
         }
         
         

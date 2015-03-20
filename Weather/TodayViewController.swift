@@ -18,6 +18,10 @@ class TodayViewController: UIViewController {
         // Do any additional setup after loading the view, typically from a nib.
         NSNotificationCenter.defaultCenter().addObserver(self, selector: "meteoDataArrived:", name: meteoDataArrivedKey, object: nil)
         
+    }
+    
+    override func viewWillAppear(animated: Bool)
+    {
         if uiNeedsRefresh {
             // get some real data
             refresh(self)
@@ -89,11 +93,11 @@ class TodayViewController: UIViewController {
             self.weatherImage.image = UIImage(named:ImageName)
             
             // and some texts
-            self.place.text = meteoData.city!
-            self.chanceOfRain.text = "\(meteoData.forecasts![0].chanceOfRain)"
+            self.place.text = meteoData.cityLong!
+            self.chanceOfRain.text = "\(meteoData.forecasts![0].chanceOfRain)%"
             self.precipitation.text = "\(meteoData.forecasts![0].precipitationMM) mm"
-            self.pressure.text = "\(meteoData.actualWeather!.pressure)"
-            self.windSpeed.text = (StoredData.sharedInstance.unitLengthAreMeters!) ? "\(meteoData.actualWeather!.windSpeedKM)" : "\(meteoData.actualWeather!.windSpeedMiles)"
+            self.pressure.text = "\(meteoData.actualWeather!.pressure) hPa"
+            self.windSpeed.text = (StoredData.sharedInstance.unitLengthAreMeters!) ? "\(meteoData.actualWeather!.windSpeedKM) km/h" : "\(meteoData.actualWeather!.windSpeedMiles) mph"
             self.winddir16Point.text = meteoData.actualWeather!.windDir16Point
         }
     }

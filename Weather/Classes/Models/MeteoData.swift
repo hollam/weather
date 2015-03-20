@@ -43,6 +43,7 @@ class MeteoDataSet
 
 class MeteoData {
     var city: String?
+    var cityLong: String?
     var actualWeather: MeteoDataSet?
     var forecasts: [MeteoDataSet]?  // forecast is get as a forecast for a noon - middle of the day
     
@@ -64,7 +65,9 @@ class MeteoData {
         let meteoApiKey = "6f31aa947553653df92cb124355e8"  // free key
         
         var url: NSURL!
-        url = NSURL(string: "http://api2.worldweatheronline.com/free/v2/weather.ashx?key=\(meteoApiKey)&q=\(location)&num_of_days=\(nDays)&format=json")
+        var urlStr = "http://api2.worldweatheronline.com/free/v2/weather.ashx?key=\(meteoApiKey)&q=\(location)&num_of_days=\(nDays)&format=json"
+        var escapedAddress = urlStr.stringByAddingPercentEscapesUsingEncoding(NSUTF8StringEncoding)
+        url = NSURL(string: escapedAddress!)
 
         let request = NSMutableURLRequest(URL: url)
         request.HTTPMethod = "GET"
@@ -89,7 +92,20 @@ class MeteoData {
             if (err != nil) {
                 println("JSON Error \(err!.localizedDescription)")
             }
+            
+            // city
+            if let data = jsonResult["data"] as? NSDictionary {
+                if let req = data["request"] as? NSArray {
+                    if let reqDict = req[0] as? NSDictionary {
+                        let city = reqDict["query"] as NSString
+                        self.cityLong = city as String                        
+                    }
+                }
+                
+            }
+            
 
+            // current condition
             if let data = jsonResult["data"] as? NSDictionary {
                 if let currentCondition = data["current_condition"] as? NSArray {
                     if let curCondDict = currentCondition[0] as? NSDictionary {
